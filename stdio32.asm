@@ -123,7 +123,22 @@ iprint:
     	pop    	eax
     	ret
 
-
+putchar:
+    	push   	edx
+    	push   	ebx
+    	push   	ecx
+    	push   	eax
+    	mov    	edx, 1
+    	mov    	ecx, esp
+    	mov    	ebx, 1
+    	mov    	eax, 4
+    	int    	80h
+    	pop    	eax
+    	pop    	ecx
+    	pop    	ebx
+    	pop    	edx
+    	ret
+    	
 ;-------------------------------------------Agrega un salto de linea----------------------
 newline:
     	push   	eax

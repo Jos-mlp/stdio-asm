@@ -3,6 +3,35 @@
 
 SECTION .data
 
+
+;-------------------------COnvierte un numero en una cadena-------------------
+convertirCadena:
+    push    ebp
+    mov     ebp, esp
+
+    mov     eax, eax     ; mueve el número a convertir en eax
+    mov     ebx, 10            ; establece la base decimal
+
+    mov     edi, edx          ; guarda la dirección de la cadena en edi
+    xor     edx, edx           ; establece edx en cero para el ciclo
+
+.ciclo:
+    xor     ebx, ebx           ; establece ebx en cero para el ciclo
+    div     ebx                ; divide eax por ebx y almacena el residuo en edx
+    add     dl, '0'            ; convierte el valor de la cifra en un caracter ASCII
+    mov     [edi], dl          ; mueve el caracter a la cadena
+    inc     edi                ; incrementa la dirección de la cadena
+    cmp     eax, 0             ; compara eax con cero para ver si ha terminado el ciclo
+    jne     .ciclo             ; si eax no es cero, repite el ciclo
+
+    xor     byte [edi], byte 0 ; agrega el terminador nulo a la cadena
+    mov     eax, ecx           ; devuelve la dirección de la cadena
+
+    pop     ebp
+    ret
+
+
+
 ;--------------------------------Convierte una cadena en un numero-------------
 ;Parametros:
 ;eax -> en esta direccion pasa la cadena que deseamos convertir
@@ -97,7 +126,7 @@ finConteo:
  	pop 	ebx		;restaura puntero de pila
  	ret			;retorna en eax la longitud de la cadena
 
-;-------------------------Imprime la cadena-----------------
+;-------------------------Imprime la cadena---------------------------------
 printStr:
  	push 	edx		;guarda punteros de pila
  	push 	ecx

@@ -3,6 +3,52 @@
 
 SECTION .data
 
+;--------------------------------Convierte una cadena en un numero-------------
+;Parametros:
+;eax -> en esta direccion pasa la cadena que deseamos convertir
+;Retorna
+;eax -> Retorna el numero convertido
+convertirNumero:
+    push    ecx         ; guarda el puntero de pila
+
+    mov     ecx, eax    ; mueve la dirección de la cadena a "ecx"
+    xor     eax, eax    
+    xor     ebx, ebx    
+    xor     edx, edx    
+    cmp     byte [ecx], 0 ; verifica si la cadena está vacía
+    je      .ends         
+
+    cmp     byte [ecx], '-' ; verifica si el número es negativo
+    je      .negative
+    jmp     .parses
+
+.negative:
+    inc     ecx          ; avanza la posición de la cadena
+    cmp     byte [ecx], 0 ; verifica si la cadena está vacía
+    je      .ends         
+
+.parses:
+    mov     bl, [ecx]    ; mueve el siguiente carácter a "bl"
+    inc     ecx          ; avanza la posición de la cadena
+    cmp     bl, '0'      ; verifica si el carácter es un número
+    jb      .ends       
+    cmp     bl, '9'
+    ja      .ends
+    sub     bl, '0'      ; convierte el carácter en un número
+    mov     edx, eax     ; mueve el resultado actual a "edx"
+    mov     eax, ebx     ; mueve el número convertido a "eax"
+    imul    edx, 10      ; multiplica el resultado por 10
+    add     eax, edx     ; agrega el resultado multiplicado al número convertido
+    jmp     .parses
+
+.ends:
+    cmp     byte [ecx - 1], '-' ; verifica si numero es negativo
+    jne     .not_negative
+    neg     eax          ; si es negativo, cambia el signo del resultado
+.not_negative:
+    pop     ecx          ; restaura el puntero de pila
+    ret                  ; retorna el resultado en "eax"
+
 
 ;--------------------Función para solicitar una cadena de texto------------------
 ;Parámetros:
@@ -33,25 +79,27 @@ inputStr:
 
 
 
-;--------------------Funcion para contar longitud de cadena----
+;--------------------Funcion para contar longitud de cadena-----------
+;parametros
+;eax: direccion de cadena 
 strlen:
-	push 	ebx
+	push 	ebx		;guarda puntero de pila
 	mov 	ebx, eax
 
 siguiente:
-	cmp 	byte[eax], 0
+	cmp 	byte[eax], 0	;verifica si la cadena esta vacia
 	jz 	finConteo
 	inc 	eax
 	jmp 	siguiente
 
 finConteo:
 	sub 	eax, ebx
- 	pop 	ebx
- 	ret
+ 	pop 	ebx		;restaura puntero de pila
+ 	ret			;retorna en eax la longitud de la cadena
 
 ;-------------------------Imprime la cadena-----------------
 printStr:
- 	push 	edx
+ 	push 	edx		;guarda punteros de pila
  	push 	ecx
  	push 	ebx
  	push 	eax
@@ -64,7 +112,7 @@ printStr:
  	mov 	eax, 4
  	int 	80h
 
- 	pop 	ebx
+ 	pop 	ebx		;retorna punteros de pila
  	pop 	ecx
  	pop 	edx
  	ret

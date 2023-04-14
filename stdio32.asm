@@ -2,7 +2,14 @@
 ;Autor Josue Maldonado
 
 SECTION .data
+        clrscrStr       db      1Bh, '[2J', 1Bh, '[3J', 0h
 
+;-----------------------Funcion para limpiar la pantalla------------
+;ClearScreen
+clrScr:
+        mov	eax, clrscrStr
+        call 	printStr
+        ret
 
 ;-------------------------COnvierte un numero en una cadena-------------------
 convertirCadena:

@@ -1,4 +1,4 @@
-;posicion x,y de texto en pantalla
+;funcion de posicion x,y de texto en pantalla
 ;Autor: Josue Maldonado
 
 %include 'stdio32.asm'

@@ -1,4 +1,4 @@
-;Programa para convertir cadenas de valor a numero
+;Programa para convertir numeros a cadenas
 ;Autor: Josue Maldonado
 
 %include        'stdio32.asm'

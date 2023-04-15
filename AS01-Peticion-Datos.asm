@@ -1,4 +1,4 @@
-;Programa para convertir cadenas a mayúsculas
+;Programa para solicitar datos al usuario
 ;Autor: Josue Maldonado
 
 %include        'stdio32.asm'

@@ -115,6 +115,29 @@ inputStr:
     ret                 ;Retornar al programa que llamó a la función
 
 
+;--------------------Funcion para solicitar datos (2)----------
+; Esta función solicita datos de entrada al usuario a través del teclado y los almacena en una variable de texto.
+; Parámetros:
+;   Entrada: Registro eax contiene la variable de texto donde se almacenarán los datos de entrada
+;            Registro ebx contiene la longitud de la cadena para limitar la cantidad de caracteres a leer
+;   Salida: Los datos de entrada del usuario se almacenan en la variable de texto especificada en eax
+ input:
+    push edx
+    push ecx
+    
+    mov  edx,ebx         ;edx=ebx longitud de cadena
+    push ebx
+    mov  ecx,eax         ;ecx=variable=texto
+    mov  ebx,0           ;entrada por teclado
+    mov  eax,3           ;servicio SYS READ opcode 3
+    int  80h
+    
+    pop ebx
+	pop ecx
+	pop edx
+	
+	ret
+	
 
 ;--------------------Funcion para contar longitud de cadena-----------
 ;parametros
@@ -275,7 +298,72 @@ gotoxy:
     ret               ; Retornar de la función gotoxy
     
     	
+;------------------------------Funcion atoi--------------------------------------------------
+; Esta función convierte una cadena de caracteres en entero.
+;Parámetros:
+;   Entrada: Registro eax contiene un puntero a la cadena de caracteres
+;   Salida: Registro eax contiene el valor numérico entero representado por la cadena de caracteres
+atoi:
+    push   ecx
+    push   esi
+    push   ebx
 
+    mov    esi, eax  ; move string pointer to esi as eax will be used for math
+    mov    eax, 0
+    mov    ecx, 0
+
+    xor    edi, edi  ; negative flag and error flag
+
+    cmp    byte [esi], 45   ; "-"
+    je     .negative
+
+.multiplyLoop:
+    xor    ebx, ebx
+    mov    bl, [esi + ecx]
+
+    cmp    bl, 10
+    je     .terminar
+    cmp    bl, 0
+    jz     .terminar
+    cmp    bl, 48     ; "0"
+    jl     .error
+    cmp    bl, 57     ; "9"
+    jg     .error
+
+    sub    bl, 48
+    add    eax, ebx
+    mov    ebx, 10
+    mul    ebx
+    inc    ecx
+    jmp    .multiplyLoop
+
+.negative:
+    inc    ecx
+    mov    edi, 1     ; make sign negative
+    jmp    .multiplyLoop
+
+
+.negar:
+    neg    eax
+    mov    edi, 0     ; because edi is both negative and error, make sure to clear it
+    jmp    .fin
+
+.error:
+    mov    edi, 1
+    jmp    .fin
+
+.terminar:
+    mov    ebx, 10
+    div    ebx
+    cmp    edi, 1
+    je     .negar
+
+.fin:
+    pop    ebx
+    pop    esi
+    pop    ecx
+    ret
+ 
 ;--------------Esta funcion se utiliza para finalizar el programa (endP)--------------------
 exit:
  	mov 	ebx, 0

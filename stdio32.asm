@@ -3,6 +3,7 @@
 
 SECTION .data
         clrscrStr       db      1Bh, '[2J', 1Bh, '[3J', 0h
+        posYX   db  1Bh, '[', ' ;', 'H', 0h     ; define la variable para almacenar la posición YX del cursor
 
 ;-----------------------Funcion para limpiar la pantalla------------
 ;ClearScreen
@@ -238,7 +239,42 @@ iprintLn:
     	ret
 
 
-	
+
+;--------------------------función gotoxy-------------------------------
+; Parámetros:
+;   - ah: Posición X del cursor 
+;   - al: Posición Y del cursor 
+gotoxy:
+    push    eax     ; Guardar el valor de registro 
+    push    edx     
+    push    ecx     
+    push    ebx     
+
+    mov bh,         ah    ; Mover el valor de AH a BH (posición X del cursor)
+    mov bl,         al    ; Mover el valor de AL a BL (posición Y del cursor)
+    mov esi,        10    
+    mov ecx,        posYX ; Cargar la dirección de memoria de la variable posYX en el registro ECX (donde se almacena la posición YX del cursor)
+
+    xor eax,        eax   ; Limpiar el registro EAX (ponerlo a cero)
+    xor edx,        edx  
+    mov al,         bh    
+    idiv esi               
+    add eax,        48    
+    add edx,        48    
+    mov byte [ecx + 2], al ; Guardar el valor de AL en la tercera posición de la variable posYX 
+    mov byte [ecx + 3], dl ; Guardar el valor de DL (residuo de la división) en la cuarta posición de la variable posYX 
+
+    
+    mov eax, posYX    ; Imprime la cadena posYX
+    call    printStr  
+
+    pop     ebx     ; Restaurar el valor de registro desde la pila
+    pop     ecx     
+    pop     edx     
+    pop     eax     
+    ret               ; Retornar de la función gotoxy
+    
+    	
 
 ;--------------Esta funcion se utiliza para finalizar el programa (endP)--------------------
 exit:

@@ -1,0 +1,92 @@
+     1                                  ; Programa en ensamblador x86_64 que eleva una base a un exponente utilizando
+     2                                  ; multiplicación cíclica.
+     3                                  ; creador: Josue Maldonado
+     4                                  ; fecha: 26/04/2023
+     5                                  
+     6                                  extern	printf
+     7                                  extern	scanf
+     8                                  extern	atoi
+     9                                  
+    10                                  SECTION .data
+    11 00000000 496E6772657365206C-     	msg:	db	"Ingrese la base y el exponente separados por un espacio: ", 0
+    11 00000009 612062617365207920-
+    11 00000012 656C206578706F6E65-
+    11 0000001B 6E7465207365706172-
+    11 00000024 61646F7320706F7220-
+    11 0000002D 756E20657370616369-
+    11 00000036 6F3A2000           
+    12 0000003A 456C20726573756C74-     	res:	db	"El resultado %f ^ %f es de: %f", 10, 0
+    12 00000043 61646F202566205E20-
+    12 0000004C 25662065732064653A-
+    12 00000055 2025660A00         
+    13                                  
+    14                                  SECTION .bss
+    15 00000000 ????????????????        	base:	resq	1
+    16 00000008 ????????????????        	exp:	resq	1
+    17 00000010 ????????????????        	result:	resq	1
+    18                                  
+    19                                  SECTION .text
+    20                                  
+    21                                  global main
+    22                                  
+    23                                  main:
+    24 00000000 55                      	push	rbp
+    25 00000001 4889E5                  	mov	rbp, rsp
+    26                                  
+    27                                  	; Lee la base y el exponente desde la línea de comandos.
+    28 00000004 48BF-                   	mov	rdi, base
+    28 00000006 [0000000000000000] 
+    29 0000000E E8(00000000)            	call	printf
+    30 00000013 488B742408              	mov	rsi, [rsp + 8]	
+    31 00000018 E8(00000000)            	call	atoi		
+    32 0000001D 48890425[00000000]      	mov	qword [base], rax
+    33                                  
+    34 00000025 48BF-                   	mov	rdi, exp
+    34 00000027 [0800000000000000] 
+    35 0000002F E8(00000000)            	call	printf
+    36 00000034 488B742410              	mov	rsi, [rsp + 16]	
+    37 00000039 E8(00000000)            	call	atoi	
+    38 0000003E 48890425[08000000]      	mov	qword [exp], rax
+    39                                  
+    40                                  	; Calcula la potencia utilizando multiplicación cíclica.
+    41 00000046 48C70425[10000000]-     	mov	qword [result], 1
+    41 0000004E 01000000           
+    42 00000052 488B0C25[08000000]      	mov	qword rcx, [exp]
+    43 0000005A 488B0425[00000000]      	mov	rax, [base]
+    44                                  
+    45                                  mul_loop:
+    46                                  ;------------multiplicacion ciclica de 2 numeros
+    47 00000062 48F7C101000000          	test	rcx, 1
+    48 00000069 7410                    	jz	shift_loop
+    49                                  
+    50 0000006B 480FAFC0                	imul	rax, rax
+    51 0000006F 48890425[10000000]      	mov	qword [result], rax
+    52 00000077 4883E901                	sub	rcx, 1
+    53                                  
+    54                                  ;----------Dezplazamiento binario
+    55                                  shift_loop:
+    56 0000007B 4885C9                  	test	rcx, rcx
+    57 0000007E 740A                    	jz	fin
+    58                                  
+    59 00000080 4883C1FF                	add	rcx, -1
+    60 00000084 480FAFC0                	imul	rax, rax
+    61 00000088 EBD8                    	jmp	mul_loop
+    62                                  
+    63                                  fin:
+    64                                  	; Imprime el resultado de la potencia.
+    65 0000008A 48BF-                   	mov	rdi, res
+    65 0000008C [3A00000000000000] 
+    66 00000094 F30F7E0425-             	movq	xmm0, qword [base]	;1er, parametro de coma flotante base
+    66 00000099 [00000000]         
+    67 0000009D F30F7E0C25-             	movq	xmm1, qword [exp]	;2o. parametro de coma flotante exponente
+    67 000000A2 [08000000]         
+    68 000000A6 F30F7E1425-             	movq	xmm2, qword [result]		;3er. parametro de coma flotante resultado
+    68 000000AB [10000000]         
+    69 000000AF B803000000              	mov	rax, 3
+    70                                  
+    71 000000B4 E8(00000000)            	call	printf
+    72                                  
+    73 000000B9 5D                      	pop	rbp
+    74 000000BA B800000000              	mov	rax, 0
+    75 000000BF C3                      	ret
+    76                                  
